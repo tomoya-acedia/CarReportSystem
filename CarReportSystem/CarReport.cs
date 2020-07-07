@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace CarReportSystem
 {
+    [Serializable]
     class CarReport
     {
         public DateTime Date{get;set;}     //作成日
