@@ -186,7 +186,6 @@ namespace CarReportSystem
             }
         }
 
-
         private void dgvCarData_Click(object sender, EventArgs e)
         {
             if (dgvCarData.CurrentRow == null)
