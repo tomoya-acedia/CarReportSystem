@@ -15,14 +15,17 @@ namespace CarReportSystem
 {
     public partial class Form1 : Form
     {
+        //リスト
         BindingList<CarReport> Reports = new BindingList<CarReport>();
+        
+        //コンストラクタ
         public Form1()
         {
             InitializeComponent();
             dgvCarData.DataSource = Reports;
         }
 
-        //画像開くボタンをクリックしたら、ウィンドウを表示する
+        //開く(画像)
         private void button3_Click(object sender, EventArgs e)
         {
             if (ofdOpenImage.ShowDialog() == DialogResult.OK)
@@ -57,6 +60,9 @@ namespace CarReportSystem
             //入力データをリストの先頭へ追加
             Reports.Insert(0, obj);
 
+            //ボタンのON/OFF
+            initButtons();
+
             //高さを自動調整
             dgvCarData.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
@@ -65,7 +71,7 @@ namespace CarReportSystem
         }
 
        
-        //メーカーのチェック
+        //選択されているメーカーのチェック
         private CarReport.CarMaKer GetCarMaker()
         {
             if (toyota.Checked == true)
@@ -109,16 +115,44 @@ namespace CarReportSystem
             selectedCar.CarPicture = pbImage.Image;
 
             dgvCarData.Refresh();       //データグリッドビューの再描画
+
+            //ボタンのON/OFF
+            initButtons();
         }
 
         //削除
         private void btDelete_Click(object sender, EventArgs e)
         {
             Reports.RemoveAt(dgvCarData.CurrentRow.Index);
+            initButtons();
             inputItemAllClear();
             dgvCarData.ClearSelection();
         }
 
+        //フォーム
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            btModify.Enabled = false;
+            btDelete.Enabled = false;
+        }
+
+        //記事一覧に何もないときは削除・修正ボタンを押せないようにする
+        //記事一覧にあるときは削除・修正ボタンを押せる状態にする
+        private void initButtons()
+        {
+            if (Reports.Count == 0)
+            {
+                btModify.Enabled = false;
+                btDelete.Enabled = false;
+            }
+            else
+            {
+                btModify.Enabled = true;
+                btDelete.Enabled = true;
+            }
+        }
+
+        //すべてクリアにする
         private void inputItemAllClear()
         {
             CreateDate.Text = "";
@@ -136,7 +170,7 @@ namespace CarReportSystem
             snota.Checked = false;
         }
 
-        //記事一覧を開く
+        //開く(記事一覧)
         private void btKiziHiraku_Click(object sender, EventArgs e)
         {
             //オープンファイルダイアログを表示
@@ -186,6 +220,7 @@ namespace CarReportSystem
             }
         }
 
+        //記事一覧
         private void dgvCarData_Click(object sender, EventArgs e)
         {
             if (dgvCarData.CurrentRow == null)
@@ -234,5 +269,7 @@ namespace CarReportSystem
                     }
             }
         }
+
+       
     }
 }
