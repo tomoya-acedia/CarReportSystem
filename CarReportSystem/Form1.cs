@@ -40,7 +40,13 @@ namespace CarReportSystem
         //削除をクリックしたら画像をクリアする
         private void btClearImage_Click(object sender, EventArgs e)
         {
-            pbImage.Image = null;
+            if (pbImage.Image == null)
+                return;
+
+            if(MessageBox.Show("削除して良いですか？","確認",MessageBoxButtons.OKCancel,MessageBoxIcon.Question)==DialogResult.OK)
+            {
+                pbImage.Image = null;
+            }
         }
 
         //追加をクリックしたら入力したものを記事一覧に表示
@@ -56,6 +62,12 @@ namespace CarReportSystem
                 Report = rtReport.Text,     //レポート
                 CarPicture= pbImage.Image,  //画像
             };
+
+            //記録者の名前を保存
+            SetComboboxRecordName(RecordName.Text);
+
+            //車名を保存
+            SetComboboxCarName(cbCarName.Text);
 
             //入力データをリストの先頭へ追加
             Reports.Insert(0, obj);
@@ -270,6 +282,86 @@ namespace CarReportSystem
             }
         }
 
-       
+        //記録者を保存
+        private void SetComboboxRecordName(string Author)
+        {
+            if (!RecordName.Items.Contains(Author))
+                RecordName.Items.Add(Author);
+        }
+
+        //車名を保存
+        private void SetComboboxCarName(string Name)
+        {
+            if (!cbCarName.Items.Contains(Name))
+                cbCarName.Items.Add(Name);
+        }
+
+        //新規作成
+        private void 新規作成ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            inputItemAllClear();
+            Reports.Clear();
+        }
+
+        //開く
+        private void 開くToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //オープンファイルダイアログを表示
+            if (ofdOpenData.ShowDialog() == DialogResult.OK)
+            {
+                //ファイルストリームを生成
+                using (FileStream fs = new FileStream(ofdOpenData.FileName, FileMode.Open))
+                {
+                    try
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+
+                        Reports = (BindingList<CarReport>)formatter.Deserialize(fs);
+
+                        dgvCarData.DataSource = Reports;
+
+                        dgvCarData_Click(sender, e);
+                    }
+                    catch (SerializationException se)
+                    {
+                        Console.WriteLine("Failed to deserialize. Reason: " + se.Message);
+                        throw;
+                    }
+                }
+            }
+        }
+
+        //すべて保存
+        private void すべて保存ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        //名前をつけて保存
+        private void 名前を付けて保存ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sfdSaveData.ShowDialog() == DialogResult.OK)
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+
+                using (FileStream fs = new FileStream(sfdSaveData.FileName, FileMode.Create))
+                {
+                    try
+                    {
+                        formatter.Serialize(fs, Reports);
+                    }
+                    catch (SerializationException se)
+                    {
+                        Console.WriteLine("Failed to serialize. Reason: " + se.Message);
+                        throw;
+                    }
+                }
+            }
+        }
+
+        //終了
+        private void 終了XToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
