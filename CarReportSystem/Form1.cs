@@ -41,12 +41,12 @@ namespace CarReportSystem
         private void btClearImage_Click(object sender, EventArgs e)
         {
             if (pbImage.Image == null)
-                return;
-
-            if(MessageBox.Show("削除して良いですか？","確認",MessageBoxButtons.OKCancel,MessageBoxIcon.Question)==DialogResult.OK)
             {
-                pbImage.Image = null;
+                MessageBox.Show("画像がありません。");
+                return;
             }
+
+            pbImage.Image = null;
         }
 
         //追加をクリックしたら入力したものを記事一覧に表示
