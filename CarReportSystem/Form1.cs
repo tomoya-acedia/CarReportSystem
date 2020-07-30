@@ -47,6 +47,7 @@ namespace CarReportSystem
             }
 
             pbImage.Image = null;
+
         }
 
         //追加をクリックしたら入力したものを記事一覧に表示
@@ -116,28 +117,20 @@ namespace CarReportSystem
         //修正
         private void btModify_Click(object sender, EventArgs e)
         {
-            //変更対象のレコード（オブジェクト）
-            //CarReport selectedCar = Reports[dgvCarReport.CurrentRow.Index];
-            /*
-            selectedCar.Date = CreateDate.Value;
-            selectedCar.Author = RecordName.Text;
-            selectedCar.Maker = GetCarMaker();
-            selectedCar.CarName = cbCarName.Text;
-            selectedCar.Report = rtReport.Text;
-            selectedCar.CarPicture = pbImage.Image;
-            */
-            //dgvCarReport.Refresh();       //データグリッドビューの再描画
+            //記録者の名前・メーカーのチェック・車名・メモを修正
+            dgvCarReport.CurrentRow.Cells[2].Value = RecordName.Text;
+            dgvCarReport.CurrentRow.Cells[3].Value = GetCarMaker().ToString();
+            dgvCarReport.CurrentRow.Cells[4].Value = cbCarName.Text;
+            dgvCarReport.CurrentRow.Cells[5].Value = rtReport.Text;
 
-            //ボタンのON/OFF
-            //initButtons();
-
-
-            dgvCarReport.CurrentRow.Cells[2].Value = cbCarName.Text;
-
-            if(pbImage.Image!=null)
+            if (pbImage.Image != null)
             {
+                dgvCarReport.CurrentRow.Cells[6].Value = ImageToByteArray(pbImage.Image);
             }
-
+            else
+            {
+                dgvCarReport.CurrentRow.Cells[6].Value = null;
+            }
 
             //データベースの更新
             this.Validate();
@@ -164,27 +157,9 @@ namespace CarReportSystem
         //フォーム
         private void Form1_Load(object sender, EventArgs e)
         {
-            // TODO: このコード行はデータを 'infosys202033DataSet.CarReport' テーブルに読み込みます。必要に応じて移動、または削除をしてください。
-            //this.carReportTableAdapter.Fill(this.infosys202033DataSet.CarReport);
-            //btModify.Enabled = false;
-            //btDelete.Enabled = false;
+           
         }
 
-        //記事一覧に何もないときは削除・修正ボタンを押せないようにする
-        //記事一覧にあるときは削除・修正ボタンを押せる状態にする
-        //private void initButtons()
-        //{
-        //    if (Reports.Count == 0)
-        //    {
-        //        btModify.Enabled = false;
-        //        btDelete.Enabled = false;
-        //    }
-        //    else
-        //    {
-        //        btModify.Enabled = true;
-        //        btDelete.Enabled = true;
-        //    }
-        //}
 
         //すべてクリアにする
         private void inputItemAllClear()
@@ -259,49 +234,6 @@ namespace CarReportSystem
         {
             if (dgvCarReport.CurrentRow == null)
                 return;
-
-            //CarReport selectedCar = Reports[dgvCarReport.CurrentRow.Index];
-
-            //CreateDate.Value = selectedCar.Date;
-            //RecordName.Text = selectedCar.Author;
-            //cbCarName.Text = selectedCar.CarName;
-            //rtReport.Text = selectedCar.Report;
-            //pbImage.Image = null;
-
-            //当てはまるものにチェックする
-            //switch (selectedCar.Maker)
-            //{
-            //    case CarReport.CarMaKer.トヨタ:
-            //        {
-            //            toyota.Checked = true;
-            //            break;
-            //        }
-            //    case CarReport.CarMaKer.日産:
-            //        {
-            //            nissan.Checked = true;
-            //            break;
-            //        }
-            //    case CarReport.CarMaKer.ホンダ:
-            //        {
-            //            honda.Checked = true;
-            //            break;
-            //        }
-            //    case CarReport.CarMaKer.スバル:
-            //        {
-            //            subaru.Checked = true;
-            //            break;
-            //        }
-            //    case CarReport.CarMaKer.外車:
-            //        {
-            //            gaisya.Checked = true;
-            //            break;
-            //        }
-            //    case CarReport.CarMaKer.その他:
-            //        {
-            //            snota.Checked = true;
-            //            break;
-            //        }
-            //}
         }
 
         //記録者を保存
@@ -322,12 +254,13 @@ namespace CarReportSystem
         private void 新規作成ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             inputItemAllClear();
-            //Reports.Clear();
         }
 
         //開く
         private void 開くToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+
             //オープンファイルダイアログを表示
             if (ofdOpenData.ShowDialog() == DialogResult.OK)
             {
@@ -388,6 +321,7 @@ namespace CarReportSystem
 
         private void carReportBindingNavigatorSaveItem_Click(object sender, EventArgs e)
         {
+            //データベースの更新
             this.Validate();
             this.carReportBindingSource.EndEdit();
             this.tableAdapterManager.UpdateAll(this.infosys202033DataSet);
@@ -409,6 +343,8 @@ namespace CarReportSystem
 
             //編集者
             RecordName.Text = dgvCarReport.CurrentRow.Cells[2].Value.ToString();
+            cbCarName.Text = dgvCarReport.CurrentRow.Cells[4].Value.ToString();
+            rtReport.Text = dgvCarReport.CurrentRow.Cells[5].Value.ToString();
 
             SetRadioButton((string)maker);
         }
@@ -459,5 +395,12 @@ namespace CarReportSystem
 
             }
         }
+
+        private void btSearchExe_Click(object sender, EventArgs e)
+        {
+            this.carReportTableAdapter.FillByCarName(this.infosys202033DataSet.CarReport,tbSearchCarName.Text,);
+        }
+
+     
     }
 }
